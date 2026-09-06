@@ -1,5 +1,5 @@
-/* عامل خدمة نظام إدارة الإيجارات — v20260906-787017 */
-var CACHE = "bgc-rental-v20260906-787017";
+/* عامل خدمة نظام إدارة الإيجارات — v20260906-799705 */
+var CACHE = "bgc-rental-v20260906-799705";
 var SHELL = ["./", "./index.html", "./manifest.webmanifest",
   "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png"];
 
