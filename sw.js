@@ -1,5 +1,5 @@
-/* عامل خدمة نظام إدارة الإيجارات — v20260906-799705 */
-var CACHE = "bgc-rental-v20260906-799705";
+/* عامل خدمة نظام إدارة الإيجارات — v20260907-807772 */
+var CACHE = "bgc-rental-v20260907-807772";
 var SHELL = ["./", "./index.html", "./manifest.webmanifest",
   "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png"];
 
@@ -27,7 +27,10 @@ self.addEventListener("fetch", function (e) {
   /* التنقّل: الشبكة أولًا لنحصل على أحدث نسخة، والذاكرة عند الانقطاع */
   if (req.mode === "navigate") {
     e.respondWith(
-      fetch(req).then(function (res) {
+      /* تجاوز ذاكرة المتصفّح صراحةً: GitHub Pages يضع max-age=600، فالطلب
+         العادي قد يُخدَم من الذاكرة عشر دقائق بعد الرفع — فيرى المستخدم نسخة
+         قديمة ويظنّ أن التعديل لم يصل. reload يذهب إلى الشبكة دائمًا. */
+      fetch(req, { cache: "reload" }).then(function (res) {
         var copy = res.clone();
         caches.open(CACHE).then(function (c) { c.put("./index.html", copy); });
         return res;
