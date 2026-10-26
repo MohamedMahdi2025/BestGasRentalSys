@@ -1,5 +1,5 @@
 /* عامل خدمة نظام إدارة الإيجارات — v20260908-863888 */
-var CACHE = "bgc-rental-v20261026-glujbw";
+var CACHE = "bgc-rental-v20261026-1d2fwdr";
 var SHELL = ["./", "./index.html", "./manifest.webmanifest",
   "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png"];
 
@@ -56,44 +56,4 @@ self.addEventListener("fetch", function (e) {
       });
     })
   );
-});
-
-/* إشعارات الدفع: الخادم يرسل {t, b, be, go, tag} مشفّرًا، والمتصفح يفكّه هنا.
-   يجب أن يُعرض إشعارٌ لكل دفعة — Safari وChrome يسحبان الإذن ممن لا يعرض. */
-self.addEventListener("push", function (e) {
-  var d = {};
-  try { d = e.data ? e.data.json() : {}; } catch (x) {
-    try { d = { t: e.data.text() }; } catch (y) { d = {}; }
-  }
-  /* لغة الجهاز يرسلها الخادم (l) كما اختارها المستخدم في النظام */
-  var en = d.l === "en";
-  if (!d.l) try { en = String((self.navigator && self.navigator.language) || "").indexOf("ar") !== 0; } catch (x) {}
-  var title = d.t || (en ? "Rental system" : "نظام إدارة الإيجارات");
-  var body = (en && d.be) ? d.be : (d.b || "");
-  e.waitUntil(self.registration.showNotification(title, {
-    body: body,
-    icon: "./icon-192.png",
-    badge: "./icon-192.png",
-    tag: d.tag ? "bgc-" + d.tag + "-" + Date.now() : undefined,
-    lang: en ? "en" : "ar",
-    dir: "auto",
-    data: { go: d.go || "" }
-  }));
-});
-
-/* الضغط على الإشعار: نافذة النظام المفتوحة تنتقل إلى الشاشة، وإلا تُفتح */
-self.addEventListener("notificationclick", function (e) {
-  e.notification.close();
-  var go = (e.notification.data && e.notification.data.go) || "";
-  var url = new URL("./" + (go ? "#go=" + go : ""), self.registration.scope).href;
-  e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(function (list) {
-    for (var i = 0; i < list.length; i++) {
-      var c = list[i];
-      if (c.url.indexOf(self.registration.scope) === 0 && "focus" in c) {
-        try { c.postMessage({ type: "bgc-go", go: go }); } catch (x) {}
-        return c.focus();
-      }
-    }
-    if (self.clients.openWindow) return self.clients.openWindow(url);
-  }));
 });
