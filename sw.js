@@ -27,10 +27,12 @@ self.addEventListener("fetch", function (e) {
   /* التنقّل: الشبكة أولًا لنحصل على أحدث نسخة، والذاكرة عند الانقطاع */
   if (req.mode === "navigate") {
     e.respondWith(
-      /* تجاوز ذاكرة المتصفّح صراحةً: GitHub Pages يضع max-age=600، فالطلب
+      /* أداء (٢٠٢٦-١١-٠٩): no-cache لا reload — يتحقّق من الخادم بالـETag في كل فتح فيأتي ردٌّ «لم يتغيّر» (304) ببضع مئات من البايتات
+         بدل تنزيل الصفحة كاملةً (680KB) كل مرّة، ويبقى الإصدار الجديد يصل فور رفعه.
+         سابقًا — تجاوز ذاكرة المتصفّح صراحةً: GitHub Pages يضع max-age=600، فالطلب
          العادي قد يُخدَم من الذاكرة عشر دقائق بعد الرفع — فيرى المستخدم نسخة
          قديمة ويظنّ أن التعديل لم يصل. reload يذهب إلى الشبكة دائمًا. */
-      fetch(req, { cache: "reload" }).then(function (res) {
+      fetch(req, { cache: "no-cache" }).then(function (res) {
         var copy = res.clone();
         caches.open(CACHE).then(function (c) { c.put("./index.html", copy); });
         return res;
